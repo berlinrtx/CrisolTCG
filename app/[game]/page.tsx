@@ -6,8 +6,9 @@ import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
 import { ChevronRight } from "lucide-react"
 
-export default function GamePage({ params }: { params: { game: string } }) {
-  const category = categories.find((cat) => cat.slug === params.game)
+export default async function GamePage({ params }: { params: Promise<{ game: string }> }) {
+  const { game } = await params
+  const category = categories.find((cat) => cat.slug === game)
 
   if (!category) {
     notFound()

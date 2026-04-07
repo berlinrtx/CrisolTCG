@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/breadcrumb"
 
 export default function SubcategoryPage({ params }: { params: { game: string; subcategory: string } }) {
+
   const category = categories.find((cat) => cat.slug === params.game)
   const subcategory = category?.subcategories?.find((sub) => sub.slug === params.subcategory)
 
