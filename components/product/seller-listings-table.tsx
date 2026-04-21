@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ShieldCheck, Star } from "lucide-react"
+import { getSupabaseBrowserClient } from "@/lib/supabase-browser"
+import { useRouter } from "next/navigation"
 
 interface SellerListing {
   id: string
@@ -54,6 +56,26 @@ export function SellerListingsTable({ listings, productName }: SellerListingsTab
 
   const getQuantity = (listingId: string) => quantities[listingId] || 1
 
+  const router = useRouter()
+
+async function handleAddToCart(inventoryId: string) {
+  const supabase = getSupabaseBrowserClient()
+  const { data: userData } = await supabase.auth.getUser()
+
+  if (!userData.user) {
+    router.push("/login")
+    return
+  }
+
+  await supabase
+    .from("cart_items")
+    .upsert(
+      { user_id: userData.user.id, inventory_id: inventoryId, quantity: 1 },
+      { onConflict: "user_id,inventory_id" }
+    )
+
+  router.push("/cart")
+}
   return (
     <div className="border rounded-2xl bg-card shadow-custom">
       <div className="p-4 md:p-6 pb-4">
@@ -148,12 +170,13 @@ export function SellerListingsTable({ listings, productName }: SellerListingsTab
                   <p className="text-sm">Q{listing.price}</p>
                 </TableCell>
                 <TableCell className="text-center">
-                  <Button
-                    size="sm"
-                    className="rounded-2xl gap-2 transition-all duration-300 hover:scale-110 hover:-translate-y-0.5 hover:shadow-lg active:scale-95"
+               <Button
+                  size="sm"
+                  className="rounded-2xl gap-2 transition-all duration-300 hover:scale-110 hover:-translate-y-0.5 hover:shadow-lg active:scale-95"
+                  onClick={() => handleAddToCart(listing.id)}
                   >
-                    Agregar
-                  </Button>
+                  Agregar
+              </Button>
                 </TableCell>
               </TableRow>
             ))}
