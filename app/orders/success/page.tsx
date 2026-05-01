@@ -1,7 +1,9 @@
+"use client"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { CheckCircle } from "lucide-react"
+import { useEffect } from "react"
 import Link from "next/link"
 
 export default function OrderSuccessPage() {
